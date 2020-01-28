@@ -1,14 +1,19 @@
-## k3.config
+#=================================================
+# Description: Build OpenWrt using GitHub Actions
+# Lisence: MIT
+# Author: eSirPlayground
+# Youtube Channel: https://goo.gl/fvkdwm 
+#=================================================
 
-name: Build_K3
+name: Build_Xiaomi_R3G
 
 on: 
   release:
     types: [published]
 
-  #push:
-  #  branches: 
-  #    - master
+  push:
+    branches: 
+      - master
 
   #schedule:
   #  - cron: 0 8 * * 5
@@ -63,9 +68,9 @@ jobs:
         ./scripts/feeds update -a
         ./scripts/feeds install -a
         ./scripts/feeds install -a
-    - name: Configuration Customization - Build_K3
+    - name: Configuration Customization - Build_Xiaomi_R3G
       env:
-        CONFIG_FILE: 'k3.config'
+        CONFIG_FILE: 'Xiaomi-r3g-lite.config'
       run: |
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
         # chmod +x ./customize.sh && ./customize.sh
@@ -85,5 +90,5 @@ jobs:
     - name : Upload artifact
       uses: actions/upload-artifact@master
       with:
-        name: OpenWrt-k3
+        name: OpenWrt-Xiaomi-R3G
         path: openwrt/bin
