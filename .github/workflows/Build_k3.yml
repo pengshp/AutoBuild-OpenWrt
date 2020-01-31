@@ -53,8 +53,8 @@ jobs:
         sudo -E apt-get clean
     - name: Clone source code
       env: 
-        REPO_URL: https://github.com/Lienol/openwrt.git
-        REPO_BRANCH: my-19.07-full
+        REPO_URL: https://github.com/coolsnowwolf/lede.git
+        REPO_BRANCH: master
       run: git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
 
     - name: Update & Install feeds
@@ -65,7 +65,7 @@ jobs:
         ./scripts/feeds install -a
     - name: Configuration Customization - Build_K3
       env:
-        CONFIG_FILE: 'k3-v2.config'
+        CONFIG_FILE: 'k3-ipk.config'
       run: |
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
         # chmod +x ./customize.sh && ./customize.sh
@@ -85,5 +85,5 @@ jobs:
     - name : Upload artifact
       uses: actions/upload-artifact@master
       with:
-        name: OpenWrt-k3
+        name: OpenWrt-k3-ipk
         path: openwrt/bin
