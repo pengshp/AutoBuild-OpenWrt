@@ -1,19 +1,15 @@
-#=================================================
-# Description: Build OpenWrt using GitHub Actions
-# Lisence: MIT
-# Author: eSirPlayground
-# Youtube Channel: https://goo.gl/fvkdwm 
-#=================================================
+## k3-last.config
+## last version
 
-name: Build_Xiaomi_3G
+name: Build_K3
 
 on: 
   release:
     types: [published]
 
-  #push:
-  #  branches: 
-  #    - master
+  push:
+    branches: 
+      - master
 
   #schedule:
   #  - cron: 0 8 * * 5
@@ -58,9 +54,36 @@ jobs:
         sudo -E apt-get clean
     - name: Clone source code
       env: 
-        REPO_URL: https://github.com/coolsnowwolf/lede
+        REPO_URL: https://github.com/coolsnowwolf/lede.git
         REPO_BRANCH: master
       run: git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
+           cd ./openwrt
+		   mkdir ./package/myapp
+		   cd ./package/myapp
+		   git clone https://github.com/tzxiaozhen88/koolproxyR.git
+		   git clone https://github.com/jerrykuku/luci-theme-argon.git
+		   svn checkout https://github.com/project-openwrt/openwrt/trunk/package/lienol/luci-theme-argon-mc
+		   svn checkout https://github.com/project-openwrt/openwrt/trunk/package/ctcgfw/luci-app-serverchan
+		   git clone https://github.com/Mleaf/openwrt-mwol.git
+		   svn checkout https://github.com/project-openwrt/openwrt/trunk/package/ctcgfw/luci-app-unblockneteasemusic
+		   mkdir ./OpenClash
+		   cd ./OpenClash
+		   git init
+		   git remote add -f origin https://github.com/vernesong/OpenClash.git
+		   git config core.sparsecheckout true
+		   echo "luci-app-openclash" >> .git/info/sparse-checkout
+		   git pull origin master
+		   git branch --set-upstream-to=origin/master master
+		   cd ..
+		   mkdir ./ssr-plus-Jo
+		   cd ./ssr-plus-Jo
+		   git clone https://github.com/Leo-Jo-My/luci-app-ssr-plus-Jo.git
+		   cd luci-app-ssr-plus-Jo
+		   sed -i 's/+PACKAGE_$(PKG_NAME)_INCLUDE_dnsforwarder:dnsforwarder/+PACKAGE_$(PKG_NAME)_INCLUDE_dnsforwarder:openwrt-dnsforwarder/g' ./Makefile
+		   cd ..
+		   svn checkout https://github.com/project-openwrt/openwrt/trunk/package/jsda/dnscrypt-proxy-full
+		   cd ..
+
 
     - name: Update & Install feeds
       working-directory: ./openwrt
@@ -68,9 +91,9 @@ jobs:
         ./scripts/feeds update -a
         ./scripts/feeds install -a
         ./scripts/feeds install -a
-    - name: Configuration Customization - Build_Xiaomi_3G
+    - name: Configuration Customization - Build_K3
       env:
-        CONFIG_FILE: 'mir3g.config'
+        CONFIG_FILE: 'k3-last.config'
       run: |
         [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
         # chmod +x ./customize.sh && ./customize.sh
@@ -90,5 +113,5 @@ jobs:
     - name : Upload artifact
       uses: actions/upload-artifact@master
       with:
-        name: OpenWrt-Xiaomir3g
+        name: OpenWrt-k3-last
         path: openwrt/bin
